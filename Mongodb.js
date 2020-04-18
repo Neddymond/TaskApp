@@ -1,5 +1,5 @@
-/** require the MongoClient off of the mongodb library */
-const MongoClient = require("mongodb").MongoClient;
+/** Destructured objects retutned by mongodb */
+const {MongoClient, ObjectID  } = require("mongodb");
 
 const connectionURL = "mongodb://127.0.0.1:27017";
 
@@ -37,22 +37,34 @@ MongoClient.connect(connectionURL, { useUnifiedTopology: true}, (error, client) 
     //     console.log(result.ops);
     // })
 
-    /** Create a new collection and insert multiple documents */
-    db.collection("Todo").insertMany([
-        {
-            description: "Get a dope-ass six figure job",
-            completed: false
-        },
-        {
-            description: "Finish reading YDKJS",
-            completed: false
-        },
-        {
-            description: "Finish reading Unfuck yourself",
-            completed: true
-        }
-    ], (error, result) => {
-        if(error) return console.log("Couldn't insert the documents into the collection");
-        console.log(result.ops);
+    // /** Create a new collection and insert multiple documents */
+    // db.collection("Todo").insertMany([
+    //     {
+    //         description: "Get a dope-ass six figure job",
+    //         completed: false
+    //     },
+    //     {
+    //         description: "Finish reading YDKJS",
+    //         completed: false
+    //     },
+    //     {
+    //         description: "Finish reading Unfuck yourself",
+    //         completed: true
+    //     }
+    // ], (error, result) => {
+    //     if(error) return console.log("Couldn't insert the documents into the collection");
+    //     console.log(result.ops);
+    // })
+    
+    /** Query Users collection for a document */
+    db.collection("Todo").findOne({_id: new ObjectID("5e9ae5d5735a10095466b3d5")}, (error, res) => {
+        if(error) return console.log("Couldn't find the user.")
+        console.log(res);
+    })
+
+    /** Query Users collection for multiple documents */
+    db.collection("Todo").find({completed: true}).toArray((error, res) => {
+        if(error) return console.log("Query failed.");
+        console.log(res);
     })
 })
