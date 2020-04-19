@@ -57,14 +57,23 @@ MongoClient.connect(connectionURL, { useUnifiedTopology: true}, (error, client) 
     // })
     
     /** Query Users collection for a document */
-    db.collection("Todo").findOne({_id: new ObjectID("5e9ae5d5735a10095466b3d5")}, (error, res) => {
-        if(error) return console.log("Couldn't find the user.")
-        console.log(res);
-    })
+    // db.collection("Todo").findOne({_id: new ObjectID("5e9ae5d5735a10095466b3d5")}, (error, res) => {
+    //     if(error) return console.log("Couldn't find the user.")
+    //     console.log(res);
+    // })
 
-    /** Query Users collection for multiple documents */
-    db.collection("Todo").find({completed: true}).toArray((error, res) => {
-        if(error) return console.log("Query failed.");
-        console.log(res);
-    })
+    // /** Query Users collection for multiple documents */
+    // db.collection("Todo").find({completed: true}).toArray((error, res) => {
+    //     if(error) return console.log("Query failed.");
+    //     console.log(res);
+    // })
+
+    /** Deletes a documemnt from a collection */
+    db.collection("Users").deleteOne({name: "Chinedu"}).then((result) => console.log(result.deletedCount)).catch((error) => console.log(error));
+    
+    /** Update a field in the user collection using promise syntax */
+    db.collection("Users").updateOne({_id: new ObjectID("5e9ad3a4f584c13f00d85478")}, {$set: {name: "Sunday"}}).then((res) => console.log(res)).catch((error) => console.log(error));
+
+    /** Remove multiple documents from the Todo collection */
+    db.collection("Todo").updateMany({completed: false}, {$set: {completed: true}}).then((result) => console.log(result)).catch((error) => console.log(error));
 })
