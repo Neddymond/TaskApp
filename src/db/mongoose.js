@@ -16,23 +16,10 @@ mongoose.connect("mongodb://127.0.0.1:27017/TaskManager-Api", {
 /** Save the document to the database */
 // me.save().then(() => console.log(me)).catch((error) => {console.log("Error:", error)});
 
-/** Create a Task model */
-const Task = mongoose.model("Task", {
-    description: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    completed: {
-        type: Boolean,
-        default: false
-    }
-});
-
 /** create an instance of the Task model */
-const todaysTask = new Task({
-    description: "Write a medium article",
-});
+// const todaysTask = new Task({
+//     description: "Write a medium article",
+// });
 
 /** Save the document to the database */
 // todaysTask.save().then(() => console.log(todaysTask)).catch((error) => {console.log(error);})
