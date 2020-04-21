@@ -13,22 +13,27 @@ app.use(express.json());
 /** Port */
 const port = process.env.PORT  || 3000;
 
-/** Create a user endpoint */
+/** User creation endpoint using post request*/
 app.post("/users", (req, res) => {
     const user = new User(req.body);
 
-    /** Save to the database */
-    user.save().then(() => res.send(user)).catch((e) => {
+    /** Save user to the database */
+    user.save().then(() => res.status(201).send(user)).catch((e) => {
         res.status(400).send(e);
     });
 });
 
-/** Create a task endpoint */
+/** Find multiple users using get request*/
+app.get("/users", (req, res) => {
+    User.find({}).then((users) => res.send(users)).catch((e) => {res.status(500).send();});
+});
+
+/** Task creation endpoint using post request*/
 app.post("/tasks", (req, res) => {
     const task = new Task(req.body);
 
-    /** save to the database */
-    task.save().then(() => res.send(task)).catch((e) => { res.status(400).send(e);});
+    /** save task to the database */
+    task.save().then(() => res.status(201).send(task)).catch((e) => { res.status(400).send(e);});
 });
 
 app.listen(port, () => {
