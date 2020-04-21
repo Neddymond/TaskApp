@@ -23,12 +23,12 @@ app.post("/users", (req, res) => {
     });
 });
 
-/** Find multiple users using get request*/
+/** Endpoint for fetching multiple users*/
 app.get("/users", (req, res) => {
     User.find({}).then((users) => res.send(users)).catch((e) => {res.status(500).send();});
 });
 
-/** Find a user */
+/** Endpoint for fetching a user using a route parameter */
 app.get("/users/:id", (req, res) => {
     /** The Id to query for */
     const _id = req.params.id;
@@ -37,7 +37,7 @@ app.get("/users/:id", (req, res) => {
         /** Return 404 error if user is not found */
         user ? res.send(user) : res.status(404).send();
     }).catch((e) => res.status(500).send());
-})
+});
 
 /** Task creation endpoint using post request*/
 app.post("/tasks", (req, res) => {
@@ -45,6 +45,21 @@ app.post("/tasks", (req, res) => {
 
     /** save task to the database */
     task.save().then(() => res.status(201).send(task)).catch((e) => { res.status(400).send(e);});
+});
+
+/** Endpont for fetching multiple tasks */
+app.get("/tasks", (req, res) => {
+    Task.find({}).then((tasks) => res.send(tasks)).catch((e) => res.status(500).send());
+});
+
+/** Endpoint for fetching a task using a route parameter*/
+app.get("/tasks/:id", (req, res) => {
+    const _id = req.params.id;
+
+    Task.findById(_id).then((task) => {
+        /** Returns task if found, else, return 404 error */
+        task ? res.send(task) : res.status(404).send();
+    }).catch((e) => res.status(500).send());
 });
 
 app.listen(port, () => {
