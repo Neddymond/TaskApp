@@ -50,6 +50,7 @@ app.get("/users/:id", async (req, res) => {
     }
 });
 
+/** Endpoint for updating a user */
 app.patch("/users/:id", async (req, res) => {
     /** Get the property names of the request body as an array */
     const reqBody = Object.keys(req.body);
@@ -113,6 +114,30 @@ app.get("/tasks/:id", async(req, res) => {
         res.status(500).send(e);
     }
 });
+
+/** Enpoint for updating a task */
+app.patch("/tasks/:id", async(req, res) => {
+    /** Get all the property names of the request body as an array */
+    const reqBody = Object.keys(req.body);
+
+    /** Array of updatable properties */
+    const updatableProperties = ["description", "completed"];
+
+    /** Check if each of the property name in "reqBody" is an updatable property */
+    const isUpdatableProperty = reqBody.every((propertyName) => updatableProperties.includes(propertyName));
+
+    /** If the above test fails, return a 400 error */
+    if(!isUpdatableProperty) return res.status(400).send({Error: "Invalid update"});
+
+    try{
+        /** Find and update a task */
+        const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators:true});
+
+        !updatedTask ? res.status(404).send() : res.send(updatedTask);
+    }catch (e) {
+        res.status(500).send(e);
+    }
+})
 
 app.listen(port, () => {
     console.log(`Server is up on port on ${port}`);
