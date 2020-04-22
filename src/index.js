@@ -78,6 +78,16 @@ app.patch("/users/:id", async (req, res) => {
     }
 });
 
+/** Endpoint for delering a user */
+app.delete("/users/:id", async(req, res) => {
+    try{
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
+        !deletedUser ? res.status(404).send() : res.send(deletedUser);
+    }catch (e) {
+        res.status(500).send(e);
+    }
+})
+
 /** Task creation endpoint using post request*/
 app.post("/tasks", async (req, res) => {
     const task = new Task(req.body);
@@ -134,6 +144,16 @@ app.patch("/tasks/:id", async(req, res) => {
         const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators:true});
 
         !updatedTask ? res.status(404).send() : res.send(updatedTask);
+    }catch (e) {
+        res.status(500).send(e);
+    }
+})
+
+/** Endpoint for deleting a task */
+app.delete("/tasks/:id", async(req, res) => {
+    try{
+        const deletedeUser = await Task.findByIdAndDelete(req.params.id);
+        !deletedeUser ? res.status(404).send() : res.send(deletedeUser);
     }catch (e) {
         res.status(500).send(e);
     }
