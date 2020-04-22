@@ -50,6 +50,33 @@ app.get("/users/:id", async (req, res) => {
     }
 });
 
+app.patch("/users/:id", async (req, res) => {
+    /** Get the property names of the request body as an array */
+    const reqBody = Object.keys(req.body);
+
+    /** List of things allowed to be updated */
+    const allowedUpdates = ["name", "email", "age", "password"];
+
+    /** Check if each of the "reqBody" is among the things allowed to be updated*/
+    const isAllowedUpdates = reqBody.every((body) => allowedUpdates.includes(body));
+
+    /** If the above test failed, return a 404 error */
+    if(!isAllowedUpdates){
+        return res.status(400).send({Error: "Invalid update"});
+    }
+    
+    try{
+        /** Fetch and update a document */
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
+    if(!user){
+        return res.status(400).send();
+    }
+    res.send(user);
+    }catch (e) {
+        res.status(500).send(e);
+    }
+});
+
 /** Task creation endpoint using post request*/
 app.post("/tasks", async (req, res) => {
     const task = new Task(req.body);
