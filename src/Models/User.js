@@ -2,6 +2,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 /** User Schema */
 const userSchema = new mongoose.Schema({
@@ -39,8 +40,23 @@ const userSchema = new mongoose.Schema({
         validate(value){
             if(value < 0) throw new Error("Positive number required");
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 });
+
+/** Generate and save user token */
+userSchema.methods.GenerateAuthToken = async function(){
+    const user = this;
+    const token = await jwt.sign({id: user._id.toString()}, "NodeJsNinja");
+    user.tokens = user.tokens.concat({token});
+    await user.save();
+    return token;
+}
 
 /** Find a user if the password provided matches with the stored one */
 userSchema.statics.FindByCredentials = async (email, password) => {

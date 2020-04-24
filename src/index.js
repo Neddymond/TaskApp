@@ -2,10 +2,6 @@
 const express = require("express");
 require("./db/mongoose");
 
-/** Import Models */
-const User = require("./Models/User");
-const Task = require("./Models/Task");
-
 /** Import Routers */
 const userRouter = require("./Routers/UserRouter");
 const taskRouter = require("./Routers/TaskRouter");

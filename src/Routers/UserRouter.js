@@ -9,16 +9,22 @@ router.post("/users", async (req, res) => {
     /** Save user to the database */
     try{
         await user.save();
-        res.status(201).send(user);
+
+        /** Generate user token on signup */
+        const token = await user.GenerateAuthToken();
+
+        res.status(201).send({user, token});
     }catch (e) {
         res.status(400).send(e);
     }
 });
 
+/** Endpoint for loggong in a user */
 router.post("/users/login", async (req, res) => {
     try{
         const user = await User.FindByCredentials(req.body.email, req.body.password);
-        res.send(user);
+        const token = await user.GenerateAuthToken();
+        res.send({user, token});
     }catch (e) {
         res.status(400).send(e);
     }
