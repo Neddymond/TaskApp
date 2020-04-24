@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true,
         trim: true,
         lowercase: true,
@@ -41,6 +42,18 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+/** Find a user if the password provided matches with the stored one */
+userSchema.statics.FindByCredentials = async (email, password) => {
+    const user = await User.findOne({email}); 
+    if(!user) throw new Error("unable to login email");
+
+    const isMatchded = await bcrypt.compare(password, user.password);
+    if(!isMatchded) throw new Error("unable to login pass");
+
+    return user;
+}
+
+/** Secure user's password on creation/modification */
 userSchema.pre("save", async function(next){
     const user = this;
 
