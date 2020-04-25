@@ -3,6 +3,9 @@ const router = new express.Router();
 /** User Model */
 const User = require("../Models/User");
 
+/** Auth Middleware */
+const auth = require("../Middleware/Auth");
+
 /**Endpoint for creating a user using a route pointer*/
 router.post("/users", async (req, res) => {
     const user = new User(req.body);
@@ -31,13 +34,8 @@ router.post("/users/login", async (req, res) => {
 });
 
 /** Endpoint for fetching multiple users*/
-router.get("/users", async (req, res) => {
-    try{
-        const users = await User.find({});
-        res.send(users);
-    }catch (e) {
-        res.status(500).send(e);
-    }
+router.get("/users/me", auth, async (req, res) => {
+    res.send(req.user);
 });
 
 /** Endpoint for fetching a user using a route parameter */
