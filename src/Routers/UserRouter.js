@@ -47,7 +47,7 @@ router.post("/users/logout", auth, async (req, res) => {
 /** Endpoint for logging out all sessions of a particular user */
 router.post("/users/logoutall", auth, async (req, res) => {
     try{
-        req.user.tokens.splice(0, req.user.tokens.length);
+        req.user.tokens = [];
         await req.user.save();
         res.send();
     }catch (e) {

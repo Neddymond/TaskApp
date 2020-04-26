@@ -49,6 +49,17 @@ const userSchema = new mongoose.Schema({
     }]
 });
 
+/** Filter out sensitive data */
+userSchema.methods.toJSON = function(){
+    const user = this;
+    const userObj = user.toObject();
+
+    delete userObj.password;
+    delete userObj.tokens;
+
+    return userObj;
+}
+
 /** Generate and save user token */
 userSchema.methods.GenerateAuthToken = async function(){
     const user = this;
@@ -61,10 +72,10 @@ userSchema.methods.GenerateAuthToken = async function(){
 /** Find a user if the password provided matches with the stored one */
 userSchema.statics.FindByCredentials = async (email, password) => {
     const user = await User.findOne({email}); 
-    if(!user) throw new Error("unable to login email");
+    if(!user) throw new Error("unable to login");
 
     const isMatchded = await bcrypt.compare(password, user.password);
-    if(!isMatchded) throw new Error("unable to login pass");
+    if(!isMatchded) throw new Error("unable to login");
 
     return user;
 }
