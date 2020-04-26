@@ -60,23 +60,8 @@ router.get("/users/me", auth, async (req, res) => {
     res.send(req.user);
 });
 
-/** Endpoint for fetching a user using a route parameter */
-router.get("/users/:id", async (req, res) => {
-    /** The Id to query for */
-    const _id = req.params.id;
-
-    try{
-        const user = await User.findById(_id);
-
-        /** Return 404 error if user is not found */
-        user ? res.send(user) : res.status(404).send();
-    }catch (e) {
-        res.status(500).send(e);
-    }
-});
-
 /** Endpoint for updating a user */
-router.patch("/users/:id", async (req, res) => {
+router.patch("/users/me", auth, async (req, res) => {
     /** Get the property names of the request body as an array */
     const reqBody = Object.keys(req.body);
 
@@ -93,24 +78,20 @@ router.patch("/users/:id", async (req, res) => {
     
     try{
         /** Fetch and update a document */
-        const user = await User.findById(req.params.id);
+        const user = req.user;
         reqBody.forEach((body) => user[body] = req.body[body]);
         await user.save();
-
-        if(!user){
-            return res.status(400).send();
-        }
         res.send(user);
     }catch (e) {
         res.status(500).send(e);
     }
 });
 
-/** Endpoint for delering a user */
-router.delete("/users/:id", async(req, res) => {
+/** Endpoint for deleting a user */
+router.delete("/users/me", auth, async(req, res) => {
     try{
-        const deletedUser = await User.findByIdAndDelete(req.params.id);
-        !deletedUser ? res.status(404).send() : res.send(deletedUser);
+        await req.user.remove();
+        res.send(req.user);
     }catch (e) {
         res.status(500).send(e);
     }
