@@ -33,7 +33,29 @@ router.post("/users/login", async (req, res) => {
     }
 });
 
-/** Endpoint for fetching multiple users*/
+/** Endpoint for logging out a user */
+router.post("/users/logout", auth, async (req, res) => {
+    try{
+        req.user.tokens = req.user.tokens.filter((token) => {return token.token !== req.token});
+        await req.user.save();
+        res.send();
+    }catch (e) {
+        res.status(500).send();
+    }
+});
+
+/** Endpoint for logging out all sessions of a particular user */
+router.post("/users/logoutall", auth, async (req, res) => {
+    try{
+        req.user.tokens.splice(0, req.user.tokens.length);
+        await req.user.save();
+        res.send();
+    }catch (e) {
+        res.status(500).send();
+    }
+})
+
+/** Endpoint for fetching user profile*/
 router.get("/users/me", auth, async (req, res) => {
     res.send(req.user);
 });
