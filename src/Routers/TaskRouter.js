@@ -2,11 +2,16 @@ const express = require("express");
 /** Task model*/
 const Task = require("../Models/Task");
 const router = express.Router();
+const auth = require("../Middleware/Auth");
 
 /** Task creation endpoint using post request*/
-router.post("/tasks", async (req, res) => {
-    const task = new Task(req.body);
-
+router.post("/tasks", auth, async (req, res) => {
+    // const task = new Task(req.body);
+    const task = new Task({
+        ...req.body,
+        owner: req.user.id
+    });
+    
     try{
         /** save task to the database */
         await task.save();
@@ -28,7 +33,7 @@ router.get("/tasks", async (req, res) => {
 });
 
 /** Endpoint for fetching a task using a route parameter*/
-router.get("/tasks/:id", async(req, res) => {
+router.get("/tasks/:id", async (req, res) => {
     const _id = req.params.id;
 
     try{
@@ -41,7 +46,7 @@ router.get("/tasks/:id", async(req, res) => {
 });
 
 /** Enpoint for updating a task */
-router.patch("/tasks/:id", async(req, res) => {
+router.patch("/tasks/:id", async (req, res) => {
     /** Get all the property names of the request body as an array */
     const reqBody = Object.keys(req.body);
 
@@ -69,7 +74,7 @@ router.patch("/tasks/:id", async(req, res) => {
 });
 
 /** Endpoint for deleting a task */
-router.delete("/tasks/:id", async(req, res) => {
+router.delete("/tasks/:id", async (req, res) => {
     try{
         const deletedeUser = await Task.findByIdAndDelete(req.params.id);
         !deletedeUser ? res.status(404).send() : res.send(deletedeUser);
