@@ -27,13 +27,16 @@ router.get("/tasks", auth, async (req, res) => {
 
     /** Assign the completed value via the query string */
     if(req.query.completed) match.completed = req.query.completed === "true";
-    console.log(req.query.completed);
 
     try{
         /** Get all tasks */
         await req.user.populate({
             path: "tasks",
-            match
+            match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip)
+            }
         }).execPopulate();
         res.send(req.user.tasks);
     }catch (e) {
