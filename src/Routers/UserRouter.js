@@ -1,10 +1,16 @@
 const express = require("express");
 const router = new express.Router();
+const multer = require("multer");
 /** User Model */
 const User = require("../Models/User");
 
 /** Auth Middleware */
 const auth = require("../Middleware/Auth");
+
+/** Destination for avatars */
+const upload = multer({
+    dest: "Avatar"
+});
 
 /**Endpoint for creating a user using a route pointer*/
 router.post("/users", async (req, res) => {
@@ -53,6 +59,11 @@ router.post("/users/logoutall", auth, async (req, res) => {
     }catch (e) {
         res.status(500).send();
     }
+});
+
+/** Endpoint for uploading files */
+router.post("/users/me/avatar", upload.single("avatar"), (req, res) => {
+    res.send();
 })
 
 /** Endpoint for fetching user profile*/
@@ -95,6 +106,6 @@ router.delete("/users/me", auth, async(req, res) => {
     }catch (e) {
         res.status(500).send(e);
     }
-})
+});
 
 module.exports = router;
