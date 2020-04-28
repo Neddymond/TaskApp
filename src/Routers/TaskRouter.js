@@ -24,9 +24,16 @@ router.post("/tasks", auth, async (req, res) => {
 /** Endpont for fetching multiple tasks */
 router.get("/tasks", auth, async (req, res) => {
     const match = {};
+    const sort = {};
 
     /** Assign the completed value via the query string */
     if(req.query.completed) match.completed = req.query.completed === "true";
+
+    /** Customize how the tasks that are returned are sorted */
+    if(req.query.sortBy){
+        const parts = req.query.sortBy.split(":");
+        sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
+    }
 
     try{
         /** Get all tasks */
@@ -35,7 +42,8 @@ router.get("/tasks", auth, async (req, res) => {
             match,
             options: {
                 limit: parseInt(req.query.limit),
-                skip: parseInt(req.query.skip)
+                skip: parseInt(req.query.skip),
+                sort
             }
         }).execPopulate();
         res.send(req.user.tasks);
