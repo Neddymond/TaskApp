@@ -96,8 +96,8 @@ router.patch("/tasks/:id", auth, async (req, res) => {
 /** Endpoint for deleting a task */
 router.delete("/tasks/:id", auth, async (req, res) => {
     try{
-        const deletedeUser = await Task.findOneAndDelete({_id: req.params.id, owner: req.user._id});
-        !deletedeUser ? res.status(404).send() : res.send(deletedeUser);
+        const deletedUser = await Task.findOneAndDelete({_id: req.params.id, owner: req.user._id});
+        !deletedUser ? res.status(404).send() : res.send(deletedUser);
     }catch (e) {
         res.status(500).send(e);
     }
