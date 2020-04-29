@@ -9,7 +9,16 @@ const auth = require("../Middleware/Auth");
 
 /** Destination for avatars */
 const upload = multer({
-    dest: "Avatar"
+    dest: "Avatar",
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb){
+        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
+            cb(new Error("Please upload an image"));
+        }
+        cb(undefined, true);
+    }
 });
 
 /**Endpoint for creating a user using a route pointer*/
@@ -64,7 +73,9 @@ router.post("/users/logoutall", auth, async (req, res) => {
 /** Endpoint for uploading files */
 router.post("/users/me/avatar", upload.single("avatar"), (req, res) => {
     res.send();
-})
+}, (error, req, res, next) => {
+    res.status(400).send({error: error.message});
+});
 
 /** Endpoint for fetching user profile*/
 router.get("/users/me", auth, async (req, res) => {
