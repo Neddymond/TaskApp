@@ -44,6 +44,9 @@ jspm_packages/
 # Config directories
 config/
 
+#Test Mock files
+TestMock.js
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
