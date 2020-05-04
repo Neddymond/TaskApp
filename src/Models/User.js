@@ -69,7 +69,7 @@ userSchema.methods.toJSON = function(){
     delete userObj.avatar;
 
     return userObj;
-}
+};
 
 /** Generate and save user token */
 userSchema.methods.GenerateAuthToken = async function(){
@@ -78,7 +78,7 @@ userSchema.methods.GenerateAuthToken = async function(){
     user.tokens = user.tokens.concat({token});
     await user.save();
     return token;
-}
+};
 
 /** Find a user if the password provided matches with the stored one */
 userSchema.statics.FindByCredentials = async (email, password) => {
@@ -89,7 +89,7 @@ userSchema.statics.FindByCredentials = async (email, password) => {
     if(!isMatchded) throw new Error("unable to login");
 
     return user;
-}
+};
 
 /** Secure user's password on creation/modification */
 userSchema.pre("save", async function(next){
