@@ -100,11 +100,11 @@ test("Should test for a user's avatar", async () => {
 
 test("Should update an authenticated user", async () => {
     await request(app)
-    .patch("/users/me")
-    .set("Authorization", `Bearer ${user1.tokens[0].token}`)
-    .send({ name: "Diamond" })
-    .expect(200);
+        .patch("/users/me")
+        .set("Authorization", `Bearer ${user1.tokens[0].token}`)
+        .send({ name: "Diamond" })
+        .expect(200);
     
-    const user = await User.findById(user1Id);
+    const user = await User.findById(user1._id);
     expect(user.name).toEqual("Diamond");
 });
