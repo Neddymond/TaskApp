@@ -1,28 +1,10 @@
 const app = require("../src/App");
-const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
 const request = require("supertest");
 const User = require("../src/Models/User");
-
-const user1Id = new mongoose.Types.ObjectId();
-
-const GenerateToken = () => jwt.sign({ _id: user1Id }, process.env.JWT_SECRET_KEY);
-
-const user1 = {
-    _id: user1Id,
-    name: "Neddy",
-    email: "Neddy@facebook.com",
-    password: "Neddy123??",
-    tokens: [{
-        token: GenerateToken()
-    }]
-};
+const { user1Id, user1, SetUpDatabase } = require("./fixtures/db");
 
 /** operations to run before each test */
-beforeEach( async () => {
-    await User.deleteMany();
-    await new User(user1).save();
-});
+beforeEach(SetUpDatabase);
 
 /** Test the sign up route */
 test("User should be able to sign up", async () => {
@@ -73,7 +55,6 @@ test("Shoud not login non-existent user", async () => {
 
 /** Test for fetching an authenticated user */
 test("Should read an authenitcated user's profile", async () => {
-    console.log(user1.tokens[0].token);
     await request(app)
         .get("/users/me")
         .set("Authorization", `Bearer ${user1.tokens[0].token}`)
@@ -84,30 +65,46 @@ test("Should read an authenitcated user's profile", async () => {
 /** Test for unauthorized user */
 test("Should expect 401 for unauthorized user", async () => {
     await request(app)
-    .get("/users/me")
-    .send()
-    .expect(401)
+        .get("/users/me")
+        .send()
+        .expect(401)
 });
 
 /** Test for deleting an authenticated user */
 test("Should delete a user", async () => {
     await request(app)
-    .delete("/users/me")
-    .set("Authorization", `Bearer ${user1.tokens[0].token}`)
-    .send()
-    .expect(200);
+        .delete("/users/me")
+        .set("Authorization", `Bearer ${user1.tokens[0].token}`)
+        .send()
+        .expect(200);
     
-    const user = User.findById(user1._id);
+    const user = await User.findById(user1._id);
     expect(user).toBeNull();
 }); 
 
 /** Test for deleting an unauthorized user */
 test("Should not delete an unauthenticated user", async () => {
     await request(app)
-    .delete("/users/me")
-    .send()
-    .expect(401);
+        .delete("/users/me")
+        .send()
+        .expect(401);
 });
 
+test("Should test for a user's avatar", async () => {
+    await request(app)
+        .post("/users/me/avatar")
+        .set("Authorization", `Bearer ${user1.tokens[0].token}`)
+        .attach("avatar", "Test/fixtures/profile-pic.jpg")
+        .expect(200)
+});
 
-
+test("Should update an authenticated user", async () => {
+    await request(app)
+    .patch("/users/me")
+    .set("Authorization", `Bearer ${user1.tokens[0].token}`)
+    .send({ name: "Diamond" })
+    .expect(200);
+    
+    const user = await User.findById(user1Id);
+    expect(user.name).toEqual("Diamond");
+});
